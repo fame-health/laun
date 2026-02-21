@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class transaksi extends Model
+class Transaksi extends Model
 {
     use Notifiable;
     protected $fillable = [
