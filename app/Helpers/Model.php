@@ -2,10 +2,18 @@
 use App\Models\{Notification, User,notifications_setting,transaksi};
 use PhpParser\Node\Stmt\Return_;
 
-class Rupiah {
-    public static function getRupiah($value) {
-        $format = "Rp " . number_format($value,0,',','.');
-        return $format;
+class Rupiah
+{
+    public static function getRupiah($value)
+    {
+        if ($value === null || $value === '') {
+            return 'Rp 0';
+        }
+
+        // Bersihkan semua karakter selain angka
+        $value = preg_replace('/[^0-9]/', '', $value);
+
+        return 'Rp ' . number_format((int)$value, 0, ',', '.');
     }
 }
 
@@ -129,30 +137,40 @@ if (! function_exists('getTokenWhatsapp'))
     }
 }
 
-// Notifikasi Whatsapp
+// Notifikasi Whatsapp (FONNTE)
 if (! function_exists('notificationWhatsapp'))
 {
-    function notificationWhatsapp($token,$waphone,$pesan)
+    function notificationWhatsapp($token, $waphone, $pesan)
     {
-        $apiURL = 'https://api.kirimwa.id/v1/messages';
-        $client = new \GuzzleHttp\Client();
-        $response = $client->request('POST', $apiURL, [
-          'headers'=> [
-            'Authorization' => 'Bearer ' . $token,
-            'Content-Type'  => 'application/json'
-          ],
-          'body' => json_encode([
-            'message' => $pesan,
-            'phone_number' => $waphone,
-            'message_type' => 'text',
-            'device_id' => 'iphone' // isi dengan device_id kalian
-          ]),
-        ]);
+        try {
 
-        $statusCode = $response->getStatusCode();
-        $responseBody = json_decode($response->getBody(), true);
+            // pastikan format nomor 62
+            $waphone = preg_replace('/^0/', '62', $waphone);
+
+            $client = new \GuzzleHttp\Client();
+
+            $response = $client->post('https://api.fonnte.com/send', [
+                'headers' => [
+                    'Authorization' => $token
+                ],
+                'form_params' => [
+                    'target'  => $waphone,
+                    'message' => $pesan,
+                ]
+            ]);
+
+            return json_decode($response->getBody(), true);
+
+        } catch (\Exception $e) {
+
+            return [
+                'status' => false,
+                'error'  => $e->getMessage()
+            ];
+        }
     }
 }
+
 
 // Get Notifikasi
 function getNotifikasi($user_id)

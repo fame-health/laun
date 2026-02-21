@@ -8,8 +8,6 @@ class AddCustomerRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize()
     {
@@ -18,31 +16,33 @@ class AddCustomerRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array
      */
     public function rules()
     {
         return [
-          'name'                  => 'required|max:25',
-          'email'                 => 'required|unique:users',
-          'alamat'                => 'required',
-          'no_telp'               => 'required|unique:users',
+            'name'    => 'required|max:25',
+            'email'   => 'nullable|email|unique:users,email',
+            'alamat'  => 'required',
+            'no_telp' => 'required|unique:users,no_telp',
         ];
     }
 
+    /**
+     * Custom error messages
+     */
     public function messages()
     {
-      return [
-        'name.required'                 => 'Nama tidak boleh kosong.',
-        'name.unique'                   => 'Nama sudah digunakan.',
-        'name.max'                      => 'Nama tidak boleh lebih dari 50 karakter.',
-        'email.required'                => 'Email tidak boleh kosong.',
-        'email.unique'                  => 'Email sudah digunakan.',
-        'email.max'                     => 'Email tidak boleh lebih dari 50 karakter.',
-        'alamat.required'               => 'Alamat tidak boleh kosong.',
-        'alamat.max'                    => 'Alamat tidak boleh lebih dari 50 karakter.',
-        'no_telp.required'              => 'Nomor Telepon tidak boleh kosong.'
-      ];
+        return [
+            'name.required'      => 'Nama tidak boleh kosong.',
+            'name.max'           => 'Nama tidak boleh lebih dari 25 karakter.',
+
+            'email.email'        => 'Format email tidak valid.',
+            'email.unique'       => 'Email sudah digunakan.',
+
+            'alamat.required'    => 'Alamat tidak boleh kosong.',
+
+            'no_telp.required'   => 'Nomor Telepon tidak boleh kosong.',
+            'no_telp.unique'     => 'Nomor Telepon sudah digunakan.',
+        ];
     }
 }

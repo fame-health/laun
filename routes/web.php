@@ -54,7 +54,7 @@ Route::middleware('auth')->group(function () {
     Route::get('profile-admin/{id}','Admin\AdminController@profile');
     Route::get('profile-admin-edit','Admin\AdminController@edit_profile');
 
-    // Dodkumentasi
+    // Dokumentasi
     Route::get('dokumentasi','Admin\DokumentasiController@index'); // Dokumentasi
     Route::get('dokumentasi/tentang','Admin\DokumentasiController@tentang'); // Tentang
     Route::get('dokumentasi/instalasi-penggunaan','Admin\DokumentasiController@instalasi'); // Instalasi & Penggunaan
@@ -66,8 +66,11 @@ Route::middleware('auth')->group(function () {
   // Modul Karyawan
   Route::prefix('/')->middleware('role:Karyawan')->group(function () {
     Route::resource('pelayanan','Karyawan\PelayananController');
+
     // Transaksi
     Route::get('add-order','Karyawan\PelayananController@addorders');
+
+    // **HANYA SATU ROUTE UNTUK UPDATE STATUS (METHOD GET)**
     Route::get('update-status-laundry','Karyawan\PelayananController@updateStatusLaundry');
 
     // Customer

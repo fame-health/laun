@@ -24,17 +24,7 @@
                             </div>
                         </div>
                         <!--/span-->
-                        <div class="col-md-4">
-                            <div class="form-group has-success">
-                                <label class="control-label">Email</label>
-                                <input type="email" class="form-control form-control-danger @error('email') is-invalid @enderror" name="email" value="{{old('email')}}" placeholder="Alamat Email" autocomplete="off">
-                                @error('email')
-                                  <span class="invalid-feedback text-danger" role="alert">
-                                      <strong>{{ $message }}</strong>
-                                  </span>
-                                @enderror
-                            </div>
-                        </div>
+
                         <div class="col-md-4">
                             <div class="form-group has-success">
                                 <label class="control-label">No. WhatsApp</label>

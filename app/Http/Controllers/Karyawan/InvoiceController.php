@@ -4,44 +4,65 @@ namespace App\Http\Controllers\Karyawan;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\{transaksi,DataBank};
-use Auth;
+use App\Models\{transaksi, DataBank};
+use Illuminate\Support\Facades\Auth;
 use PDF;
+
 class InvoiceController extends Controller
 {
-       // Invoice
+    // ===============================
+    // TAMPIL INVOICE (HTML VIEW)
+    // ===============================
     public function invoicekar(Request $request)
     {
-      $invoice = transaksi::with('price')
-      ->where('user_id',Auth::id())
-      ->where('id',$request->id)
-      ->get();
+        $invoice = transaksi::with('price')
+            ->where('user_id', Auth::id())
+            ->where('id', $request->id)
+            ->get();
 
-      $data = transaksi::with('customers','user')
-      ->where('user_id',Auth::id())
-      ->where('id',$request->id)
-      ->first();
+        $data = transaksi::with(['customers', 'user'])
+            ->where('user_id', Auth::id())
+            ->where('id', $request->id)
+            ->firstOrFail();
 
-      $bank = DataBank::get();
-      return view('karyawan.laporan.invoice', compact('invoice','data','bank'));
+        $bank = DataBank::get();
+
+        return view('karyawan.laporan.invoice', compact('invoice', 'data', 'bank'));
     }
 
-    // Cetak invoice
+
+    // ===============================
+    // CETAK INVOICE THERMAL 80MM
+    // ===============================
     public function cetakinvoice(Request $request)
     {
-       $invoice = transaksi::with('price')
-      ->where('user_id',Auth::id())
-      ->where('id',$request->id)
-      ->get();
+        $invoice = transaksi::with('price')
+            ->where('user_id', Auth::id())
+            ->where('id', $request->id)
+            ->get();
 
-      $data = transaksi::with('customers','user')
-      ->where('user_id',Auth::id())
-      ->where('id',$request->id)
-      ->first();
+        $data = transaksi::with(['customers', 'user'])
+            ->where('user_id', Auth::id())
+            ->where('id', $request->id)
+            ->firstOrFail();
 
-      $bank = DataBank::get();
+        $bank = DataBank::get();
 
-      $pdf = PDF::loadView('karyawan.laporan.cetak', compact('invoice','data','bank'))->setPaper('a4', 'landscape');
-      return $pdf->stream();
+        /*
+         |-------------------------------------------
+         | Ukuran Thermal 80mm
+         | 80mm = 226.77 point
+         | Height dibuat panjang supaya tidak kepotong
+         |-------------------------------------------
+        */
+        $customPaper = [0, 0, 226.77, 400];
+
+        $pdf = PDF::loadView(
+                    'karyawan.laporan.cetak',
+                    compact('invoice', 'data', 'bank')
+                )
+                ->setPaper($customPaper);
+
+        return $pdf->stream('invoice-thermal.pdf');
     }
 }
